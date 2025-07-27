@@ -40,14 +40,14 @@ router.get('/users', [
     }
 
     // Get total count
-    const [countResult] = await db.promise().query(
+    const [countResult] = await db.query(
       `SELECT COUNT(*) as total FROM users ${whereClause}`,
       params
     );
     const total = countResult[0].total;
 
     // Get users with pagination
-    const [users] = await db.promise().query(
+    const [users] = await db.query(
       `SELECT 
         id, username, email, role, first_name, last_name, 
         is_active, created_at, updated_at
@@ -96,7 +96,7 @@ router.post('/users', isAdmin, [
     const { username, email, password, firstName, lastName, role } = req.body;
 
     // Check if user already exists
-    const [existingUsers] = await db.promise().query(
+    const [existingUsers] = await db.query(
       'SELECT id FROM users WHERE username = ? OR email = ?',
       [username, email]
     );
@@ -109,13 +109,13 @@ router.post('/users', isAdmin, [
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Insert new user
-    const [result] = await db.promise().query(
+    const [result] = await db.query(
       'INSERT INTO users (username, email, password, first_name, last_name, role) VALUES (?, ?, ?, ?, ?, ?)',
       [username, email, hashedPassword, firstName, lastName, role]
     );
 
     // Get the created user
-    const [newUser] = await db.promise().query(
+    const [newUser] = await db.query(
       'SELECT id, username, email, role, first_name, last_name, is_active, created_at FROM users WHERE id = ?',
       [result.insertId]
     );
@@ -149,7 +149,7 @@ router.put('/users/:id', isAdmin, [
     const { firstName, lastName, email, role, isActive } = req.body;
 
     // Check if user exists
-    const [existingUsers] = await db.promise().query(
+    const [existingUsers] = await db.query(
       'SELECT id FROM users WHERE id = ?',
       [id]
     );
@@ -159,7 +159,7 @@ router.put('/users/:id', isAdmin, [
     }
 
     // Check if email is already taken by another user
-    const [emailCheck] = await db.promise().query(
+    const [emailCheck] = await db.query(
       'SELECT id FROM users WHERE email = ? AND id != ?',
       [email, id]
     );
@@ -169,13 +169,13 @@ router.put('/users/:id', isAdmin, [
     }
 
     // Update user
-    await db.promise().query(
+    await db.query(
       'UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, is_active = ? WHERE id = ?',
       [firstName, lastName, email, role, isActive, id]
     );
 
     // Get updated user
-    const [updatedUser] = await db.promise().query(
+    const [updatedUser] = await db.query(
       'SELECT id, username, email, role, first_name, last_name, is_active, created_at FROM users WHERE id = ?',
       [id]
     );
@@ -197,7 +197,7 @@ router.delete('/users/:id', isAdmin, async (req, res) => {
     const { id } = req.params;
 
     // Check if user exists
-    const [existingUsers] = await db.promise().query(
+    const [existingUsers] = await db.query(
       'SELECT id FROM users WHERE id = ?',
       [id]
     );
@@ -212,7 +212,7 @@ router.delete('/users/:id', isAdmin, async (req, res) => {
     }
 
     // Delete user
-    await db.promise().query('DELETE FROM users WHERE id = ?', [id]);
+    await db.query('DELETE FROM users WHERE id = ?', [id]);
 
     res.json({ message: 'User deleted successfully' });
 
@@ -225,19 +225,19 @@ router.delete('/users/:id', isAdmin, async (req, res) => {
 // Get system statistics
 router.get('/stats', async (req, res) => {
   try {
-    const [userStats] = await db.promise().query(
+    const [userStats] = await db.query(
       'SELECT role, COUNT(*) as count FROM users GROUP BY role'
     );
 
-    const [employeeStats] = await db.promise().query(
+    const [employeeStats] = await db.query(
       'SELECT status, COUNT(*) as count FROM employees GROUP BY status'
     );
 
-    const [departmentStats] = await db.promise().query(
+    const [departmentStats] = await db.query(
       'SELECT department, COUNT(*) as count FROM employees GROUP BY department'
     );
 
-    const [recentActivity] = await db.promise().query(
+    const [recentActivity] = await db.query(
       'SELECT COUNT(*) as count FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)'
     );
 
@@ -270,13 +270,13 @@ router.get('/audit-log', [
     const offset = (page - 1) * limit;
 
     // Get total count
-    const [countResult] = await db.promise().query(
+    const [countResult] = await db.query(
       'SELECT COUNT(*) as total FROM audit_log'
     );
     const total = countResult[0].total;
 
     // Get audit log with pagination
-    const [auditLog] = await db.promise().query(
+    const [auditLog] = await db.query(
       `SELECT 
         al.*, u.username, u.first_name, u.last_name
        FROM audit_log al

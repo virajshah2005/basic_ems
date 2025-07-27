@@ -103,12 +103,14 @@ export default function LoginForm() {
         <Paper
           elevation={24}
           sx={{
-            p: 4,
+            p: { xs: 2, sm: 4 },
             width: '100%',
             maxWidth: 400,
+            minWidth: { md: 350 },
             borderRadius: 3,
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)',
+            boxSizing: 'border-box',
           }}
         >
           <motion.div
