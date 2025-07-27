@@ -1,4 +1,4 @@
-# Employee Management System
+# Prodigy InfoTech Task - 2 Employee Management System
 
 A fullstack web application for managing employees, tasks, attendance, and payroll. Built with Node.js (Express, MySQL) for the backend and React (Vite, TypeScript, MUI) for the frontend.
 
